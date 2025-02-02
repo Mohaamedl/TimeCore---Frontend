@@ -16,3 +16,5 @@ export const register = async (userData: UserData): Promise<AuthResponse> => {
 export const logout = (): void => {
   localStorage.removeItem('token');
 };
+
+export type { UserData };

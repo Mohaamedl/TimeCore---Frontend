@@ -1,3 +1,10 @@
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -11,15 +18,29 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --primary-color: #4caf50; /* Green */
+  --secondary-color: #ffffff; /* White */
+  --background-color: #f0f0f0; /* Light gray */
+  --text-color: #333333; /* Dark gray */
+  --accent-color: #ffeb3b; /* Yellow */
+  --highlight-color: #795548; /* Brown */
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 a {
   font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+  color: var(--primary-color);
+  text-decoration: none;
 }
 a:hover {
-  color: #535bf2;
+  color: var(--highlight-color);
 }
 
 body {
@@ -28,6 +49,43 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Responsive container */
+.container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Responsive breakpoints */
+@media (min-width: 640px) {
+  .container {
+    max-width: 640px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1280px;
+  }
 }
 
 h1 {
@@ -36,18 +94,19 @@ h1 {
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
+  border-radius: 0.25rem;
+  border: none;
+  padding: 0.5rem 1rem;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
   cursor: pointer;
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: #646cff;
+  background-color: var(--highlight-color);
 }
 button:focus,
 button:focus-visible {
@@ -64,5 +123,73 @@ button:focus-visible {
   }
   button {
     background-color: #f9f9f9;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-color: #4caf50; /* Green */
+    --secondary-color: #000000; /* Black */
+    --background-color: #121212; /* Dark gray */
+    --text-color: #e0e0e0; /* Light gray */
+    --accent-color: #ffeb3b; /* Yellow */
+    --highlight-color: #795548; /* Brown */
+  }
+
+  body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+  }
+
+  button {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+  }
+
+  button:hover {
+    background-color: var(--highlight-color);
+  }
+}
+
+/* Add these styles to your index.css */
+.rbc-calendar {
+  @apply font-sans;
+}
+
+.rbc-toolbar button {
+  @apply bg-green-500 text-white hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700;
+}
+
+.rbc-toolbar button.rbc-active {
+  @apply bg-green-700;
+}
+
+.rbc-event {
+  @apply bg-green-500 dark:bg-green-600;
+}
+
+.rbc-today {
+  @apply bg-green-50 dark:bg-green-900/20;
+}
+
+.rbc-off-range-bg {
+  @apply bg-gray-100 dark:bg-gray-800;
+}
+
+.rbc-header {
+  @apply dark:text-gray-300;
+}
+
+.rbc-button-link {
+  @apply dark:text-gray-300;
+}
+
+@media (max-width: 768px) {
+  .rbc-toolbar {
+    @apply flex-col gap-2;
+  }
+  
+  .rbc-toolbar-label {
+    @apply text-center;
   }
 }
