@@ -1,56 +1,85 @@
-import { FC, useState } from 'react';
-import { Calendar, momentLocalizer, Event } from 'react-big-calendar';
+import { FC, useState, useCallback } from 'react';
+import { Calendar, momentLocalizer, View } from 'react-big-calendar';
 import moment from 'moment';
+import { useCalendarStore, CalendarEvent } from '@/store/CalendarStore';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import '../css/CalendarPage.css'; 
 
-interface CalendarEvent extends Event {
-  id?: string;
-  title: string;
-  description?: string;
-}
+const localizer = momentLocalizer(moment);
 
 const CalendarPage: FC = () => {
-  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [view, setView] = useState<View>('month');
+  const { events, addEvent, updateEvent, deleteEvent, draftEvent, setDraftEvent } = useCalendarStore();
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [isNewEvent, setIsNewEvent] = useState(false);
 
-  const handleSelectSlot = ({ start, end }: { start: Date; end: Date }) => {
-    setSelectedEvent({ start, end, title: '' });
+  const handleSelectSlot = useCallback(({ start, end }: { start: Date; end: Date }) => {
+    const newEvent = { 
+      id: Date.now().toString(),
+      title: 'New Event',
+      start: new Date(start),
+      end: new Date(end),
+      isDraft: true
+    };
+    setDraftEvent(newEvent);
+    setSelectedEvent(newEvent);
     setIsNewEvent(true);
-  };
+  }, [setDraftEvent]);
 
-  const handleSelectEvent = (event: CalendarEvent) => {
+  const handleSelectEvent = useCallback((event: CalendarEvent) => {
     setSelectedEvent(event);
     setIsNewEvent(false);
-  };
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedEvent) {
       if (isNewEvent) {
-        setEvents([...events, { ...selectedEvent, id: Date.now().toString() }]);
+        addEvent(selectedEvent);
       } else {
-        setEvents(events.map(event => 
-          event.id === selectedEvent.id ? selectedEvent : event
-        ));
+        updateEvent(selectedEvent);
       }
       setSelectedEvent(null);
+      setDraftEvent(null);
     }
+  };
+
+  const allEvents = [...events, ...(draftEvent ? [draftEvent] : [])];
+
+  const eventStyleGetter = (event: CalendarEvent) => {
+    return {
+      style: {
+        backgroundColor: event.isDraft ? '#795548' : '#4caf50',
+        opacity: event.isDraft ? 0.7 : 1
+      }
+    };
   };
 
   return (
     <div className="flex flex-col md:flex-row h-[calc(100vh-4rem)] gap-4 p-4 bg-gray-100 dark:bg-gray-900">
       <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
         <Calendar
-          localizer={momentLocalizer(moment)}
-          events={events}
+          localizer={localizer}
+          events={allEvents}
           startAccessor="start"
           endAccessor="end"
           style={{ height: '100%' }}
           onSelectSlot={handleSelectSlot}
           onSelectEvent={handleSelectEvent}
+          onView={setView}
+          view={view}
           selectable
           popup
+          longPressThreshold={250}
+          eventPropGetter={eventStyleGetter}
+          views={['month', 'week', 'day', 'agenda']}
+          messages={{
+            noEventsInRange: 'No events scheduled',
+            allDay: 'All day',
+            date: 'Date',
+            time: 'Time',
+            event: 'Event',
+          }}
         />
       </div>
       
@@ -65,8 +94,10 @@ const CalendarPage: FC = () => {
             </label>
             <input
               type="text"
+              title="Event Title"
+              placeholder="Enter event title..."
               value={selectedEvent?.title || ''}
-              onChange={e => setSelectedEvent(prev => 
+              onChange={e => setSelectedEvent((prev: any) => 
                 prev ? { ...prev, title: e.target.value } : null
               )}
               className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
@@ -79,6 +110,8 @@ const CalendarPage: FC = () => {
               Description
             </label>
             <textarea
+              title="Event Description"
+              placeholder="Enter event description..."
               value={selectedEvent?.description || ''}
               onChange={e => setSelectedEvent(prev => 
                 prev ? { ...prev, description: e.target.value } : null
@@ -99,7 +132,7 @@ const CalendarPage: FC = () => {
               <button
                 type="button"
                 onClick={() => {
-                  setEvents(events.filter(e => e.id !== selectedEvent.id));
+                  deleteEvent(selectedEvent.id);
                   setSelectedEvent(null);
                 }}
                 className="flex-1 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600"

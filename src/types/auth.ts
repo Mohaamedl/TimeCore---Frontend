@@ -1,3 +1,4 @@
+
 export interface AuthResponse {
   jwt: string;
   status: boolean;
