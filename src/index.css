@@ -151,7 +151,7 @@ button:focus-visible {
   }
 }
 
-/* Add these styles to your index.css */
+
 .rbc-calendar {
   @apply font-sans;
 }
@@ -166,6 +166,7 @@ button:focus-visible {
 
 .rbc-event {
   @apply bg-green-500 dark:bg-green-600;
+  transition: all 0.3s ease;
 }
 
 .rbc-today {
@@ -192,4 +193,10 @@ button:focus-visible {
   .rbc-toolbar-label {
     @apply text-center;
   }
+}
+
+
+.rbc-event.draft-event {
+  background-color: #795548 !important;
+  opacity: 0.7;
 }
