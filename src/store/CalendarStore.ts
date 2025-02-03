@@ -38,6 +38,12 @@ export const useCalendarStore = create(
       addEvents: (newEvents) => set((state) => ({
         events: [...state.events, ...newEvents]
       })),
+      getEventsByMonth: (year, month) => {
+        return get().events.filter((event: CalendarEvent) => 
+          event.start.getFullYear() === year && 
+          event.start.getMonth() === month
+        );
+      },
       clearEvents: () => {
         set({ events: [], draftEvent: null });
         localStorage.removeItem('calendar-storage');
@@ -67,3 +73,7 @@ export const useCalendarStore = create(
     }
   )
 );
+function get() {
+  return useCalendarStore.getState();
+}
+
