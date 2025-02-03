@@ -1,19 +1,19 @@
-
 export interface AuthResponse {
-  jwt: string;
-  status: boolean;
+  jwt?: string | null;
+  status: string;
   message: string;
-  isTwoFactorAuthEnabled: boolean;
+  requiresTwoFactor?: boolean;
   session?: string;
+  twoFactorAuthEnabled?: boolean;
 }
 
 export interface UserData {
   fullname: string;
   email: string;
   password: string;
-  role?: string;
+  role?: 'USER' | 'ADMIN';
   twoFactorAuth?: {
-    is_enabled: boolean;
-    send_to: 'MOBILE' | 'EMAIL';
+    isEnabled: boolean;
+    sendTo: 'MOBILE' | 'EMAIL' | null;
   };
 }

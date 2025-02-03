@@ -14,6 +14,8 @@ interface CalendarStore {
   events: CalendarEvent[];
   draftEvent: CalendarEvent | null;
   addEvent: (event: CalendarEvent) => void;
+  addEvents: (newEvents: CalendarEvent[]) => void;
+  clearEvents: () => void;
   updateEvent: (event: CalendarEvent) => void;
   deleteEvent: (eventId: string) => void;
   setDraftEvent: (event: CalendarEvent | null) => void;
@@ -22,44 +24,23 @@ interface CalendarStore {
 
 export const useCalendarStore = create(
   persist<CalendarStore>(
-    (set, get) => ({
+    (set) => ({
       events: [],
       draftEvent: null,
-      addEvent: (event) => set((state) => ({ 
-        events: [...state.events, {
-          ...event,
-          start: new Date(event.start),
-          end: new Date(event.end),
-          isDraft: false
-        }],
-        draftEvent: null
+      addEvent: (event) => set((state) => ({ events: [...state.events, event] })),
+      updateEvent: (event) => set((state) => ({
+        events: state.events.map((e) => (e.id === event.id ? event : e))
       })),
-      updateEvent: (updatedEvent) => set((state) => ({
-        events: state.events.map(event => 
-          event.id === updatedEvent.id ? {
-            ...updatedEvent,
-            start: new Date(updatedEvent.start),
-            end: new Date(updatedEvent.end),
-            isDraft: false
-          } : event
-        )
+      deleteEvent: (id) => set((state) => ({
+        events: state.events.filter((e) => e.id !== id)
       })),
-      deleteEvent: (eventId) => set((state) => ({
-        events: state.events.filter(event => event.id !== eventId)
+      setDraftEvent: (event) => set({ draftEvent: event }),
+      addEvents: (newEvents) => set((state) => ({
+        events: [...state.events, ...newEvents]
       })),
-      setDraftEvent: (event) => set({ 
-        draftEvent: event ? {
-          ...event,
-          start: new Date(event.start),
-          end: new Date(event.end)
-        } : null 
-      }),
-      getEventsByMonth: (year, month) => {
-        return get().events.filter(event => {
-          const eventDate = new Date(event.start);
-          return eventDate.getFullYear() === year && 
-                 eventDate.getMonth() === month;
-        });
+      clearEvents: () => {
+        set({ events: [], draftEvent: null });
+        localStorage.removeItem('calendar-storage');
       }
     }),
     {
@@ -73,37 +54,13 @@ export const useCalendarStore = create(
             ...parsed,
             state: {
               ...parsed.state,
-              events: parsed.state.events.map((event: any) => ({
-                ...event,
-                start: new Date(event.start),
-                end: new Date(event.end)
-              })),
-              draftEvent: parsed.state.draftEvent ? {
-                ...parsed.state.draftEvent,
-                start: new Date(parsed.state.draftEvent.start),
-                end: new Date(parsed.state.draftEvent.end)
-              } : null
+              events: [],
+              draftEvent: null
             }
           };
         },
         setItem: (key, value) => {
-          const serialized = {
-            ...value,
-            state: {
-              ...value.state,
-              events: value.state.events.map((event: any) => ({
-                ...event,
-                start: event.start.toISOString(),
-                end: event.end.toISOString()
-              })),
-              draftEvent: value.state.draftEvent ? {
-                ...value.state.draftEvent,
-                start: value.state.draftEvent.start.toISOString(),
-                end: value.state.draftEvent.end.toISOString()
-              } : null
-            }
-          };
-          localStorage.setItem(key, JSON.stringify(serialized));
+          localStorage.setItem(key, JSON.stringify(value));
         },
         removeItem: (key) => localStorage.removeItem(key)
       }
