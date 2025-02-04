@@ -45,7 +45,7 @@ export const register = async (userData: UserData): Promise<AuthResponse> => {
       role: 'USER',
       twoFactorAuth: {
         isEnabled: false,
-        sendTo: null
+        sendTo: "EMAIL"
       }
     });
     

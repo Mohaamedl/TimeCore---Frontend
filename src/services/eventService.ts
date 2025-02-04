@@ -5,6 +5,7 @@ import 'moment/locale/pt';
 
 const API_URL = 'http://localhost:8080/api/events';
 
+
 export const importEventsFromPDF = async (file: File): Promise<CalendarEvent[]> => {
   const token = localStorage.getItem('token');
   if (!token) {
