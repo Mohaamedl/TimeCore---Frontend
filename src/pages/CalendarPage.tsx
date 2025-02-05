@@ -110,118 +110,138 @@ const CalendarPage: FC = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row h-[calc(100vh-4rem)] gap-4 p-4 bg-gray-100 dark:bg-gray-900">
-      <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-        {/* Import Button */}
-        <div className="mb-4 flex justify-end">
-          <input
-            type="file"
-            ref={fileInputRef}
-            accept=".pdf,application/pdf"
-            onChange={handleFileImport}
-            className="hidden"
-          />
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isLoading}
-            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? 'Importing...' : 'Import PDF'}
-          </button>
-        </div>
-
-        {error && (
-          <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
-            {error}
-          </div>
-        )}
-
-        <Calendar
-          localizer={localizer}
-          events={allEvents}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: 'calc(100% - 60px)' }}
-          onSelectSlot={handleSelectSlot}
-          onSelectEvent={handleSelectEvent}
-          onView={setView}
-          view={view}
-          selectable
-          popup
-          longPressThreshold={250}
-          eventPropGetter={eventStyleGetter}
-          views={['month', 'week', 'day', 'agenda']}
-          messages={{
-            noEventsInRange: 'No events scheduled',
-            allDay: 'All day',
-            date: 'Date',
-            time: 'Time',
-            event: 'Event',
-          }}
-        />
+    <div className='mx-auto max-w-screen-2xl px-4 md:px-8'>
+      <div className="min-h-screen bg-gray-100">
+      <div className="h-[100px]">
       </div>
-      
-      <div className="w-full md:w-80 bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-        <h2 className="text-xl font-bold mb-4 text-green-600 dark:text-green-400">
-          {isNewEvent ? 'Add New Event' : 'Edit Event'}
-        </h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2 dark:text-gray-300">
-              Title
-            </label>
-            <input
-              type="text"
-              title="Event Title"
-              placeholder="Enter event title..."
-              value={selectedEvent?.title || ''}
-              onChange={e => setSelectedEvent((prev: any) => 
-                prev ? { ...prev, title: e.target.value } : null
+        {/* Div1: Contenedor principal */}
+        <div className="container mx-auto mt-20 w-11/12">
+          {/* Div2: Sección horizontal dividida en 70% y 30% */}
+          <div className="flex justify-between mb-8">
+            <div className="w-8/9 p-3 bg-white shadow-md rounded-lg">
+              <p className="text-center">lista de horario</p>
+            </div>
+            <div className="w-3/12 p-3 items-center justify-center shadow-md rounded-lg">
+              <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept=".pdf,application/pdf"
+                  onChange={handleFileImport}
+                  className="hidden"
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isLoading}
+                  className="px-4 py-2 bg-green-500 text-white items-center justify-center rounded-md hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? 'Importing...' : 'Import PDF'}
+                </button>
+                {error && (
+                <div className="w-full p-4 bg-red-100 text-red-700 rounded-md text-center">
+                  {error}
+                </div>
               )}
-              className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
-              required
-            />
-          </div>
-          
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2 dark:text-gray-300">
-              Description
-            </label>
-            <textarea
-              title="Event Description"
-              placeholder="Enter event description..."
-              value={selectedEvent?.description || ''}
-              onChange={e => setSelectedEvent(prev => 
-                prev ? { ...prev, description: e.target.value } : null
-              )}
-              className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
-              rows={4}
-            />
-          </div>
-          
-          <div className="flex gap-2">
-            <button
-              type="submit"
-              className="flex-1 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
-            >
-              {isNewEvent ? 'Add Event' : 'Update Event'}
-            </button>
-            {!isNewEvent && selectedEvent && (
-              <button
-                type="button"
-                onClick={() => {
-                  deleteEvent(selectedEvent.id);
-                  setSelectedEvent(null);
+              
+            </div>
+          </div><br></br>
+
+          {/* Div3: Sección vertical dividida en 70% y 30% */}
+          <div className="flex flex-wrap gap-1 space-y-8">
+            <div className="w-[69%] p-3 dark:bg-gray-800 shadow-md rounded-lg">
+              <Calendar
+                localizer={localizer}
+                events={allEvents}
+                startAccessor="start"
+                endAccessor="end"
+                style={{ height: 'calc(100% - 60px)' }}
+                onSelectSlot={handleSelectSlot}
+                onSelectEvent={handleSelectEvent}
+                onView={setView}
+                view={view}
+                selectable
+                popup
+                longPressThreshold={250}
+                eventPropGetter={eventStyleGetter}
+                views={['month', 'week', 'day', 'agenda']}
+                messages={{
+                  noEventsInRange: 'No events scheduled',
+                  allDay: 'All day',
+                  date: 'Date',
+                  time: 'Time',
+                  event: 'Event',
                 }}
-                className="flex-1 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600"
-              >
-                Delete
-              </button>
-            )}
-          </div>
-        </form>
+              />
+            </div>
+            <div className="w-[30%] p-3 dark:bg-gray-800 rounded-lg shadow-md">
+              <h2 className="text-xl font-bold mb-4 text-green-600 dark:text-green-400">
+                {isNewEvent ? 'Add New Event' : 'Edit Event'}
+              </h2>
+              <form onSubmit={handleSubmit}>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-2 dark:text-gray-300">
+                    Title
+                  </label>
+                  <input
+                    type="text"
+                    title="Event Title"
+                    placeholder="Enter event title..."
+                    value={selectedEvent?.title || ''}
+                    onChange={e => setSelectedEvent((prev: any) => 
+                      prev ? { ...prev, title: e.target.value } : null
+                    )}
+                    className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
+                    required
+                  />
+                </div>
+                
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-2 dark:text-gray-300">
+                    Description
+                  </label>
+                  <textarea
+                    title="Event Description"
+                    placeholder="Enter event description..."
+                    value={selectedEvent?.description || ''}
+                    onChange={e => setSelectedEvent(prev => 
+                      prev ? { ...prev, description: e.target.value } : null
+                    )}
+                    className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
+                    rows={4}
+                  />
+                </div>
+                
+                <div className="flex gap-2">
+                  <button
+                    type="submit"
+                    className="flex-1 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
+                  >
+                    {isNewEvent ? 'Add Event' : 'Update Event'}
+                  </button>
+                  {!isNewEvent && selectedEvent && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        deleteEvent(selectedEvent.id);
+                        setSelectedEvent(null);
+                      }}
+                      className="flex-1 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600"
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
+              </form>             
+            </div>
+        </div>
+      </div><br></br>
+
+        {/* Div4: Footer */}
+        <footer className="bg-blue-900 text-white text-center py-4 mt-8">
+          <p>Gracias a estos desarrolladores</p>
+        </footer>
       </div>
     </div>
+    
   );
 };
 
