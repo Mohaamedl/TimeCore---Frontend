@@ -112,16 +112,16 @@ const CalendarPage: FC = () => {
   return (
     <div className='mx-auto max-w-screen-2xl px-4 md:px-8'>
       <div className="min-h-screen bg-gray-100">
-      <div className="h-[100px]">
+      <div className="h-[40px]">
       </div>
         {/* Div1: Contenedor principal */}
         <div className="container mx-auto mt-20 w-11/12">
           {/* Div2: Sección horizontal dividida en 70% y 30% */}
-          <div className="flex justify-between mb-8">
-            <div className="w-8/9 p-3 bg-white shadow-md rounded-lg">
+          <div className="flex justify-between">
+            <div className="w-8/9 p-3 justify-center flex items-center shadow-md rounded-sm">
               <p className="text-center">lista de horario</p>
             </div>
-            <div className="w-3/12 p-3 items-center justify-center shadow-md rounded-lg">
+            <div className="w-1/8">
               <input
                   type="file"
                   ref={fileInputRef}
@@ -146,7 +146,7 @@ const CalendarPage: FC = () => {
           </div><br></br>
 
           {/* Div3: Sección vertical dividida en 70% y 30% */}
-          <div className="flex flex-wrap gap-1 space-y-8">
+          <div className="flex flex-wrap gap-2 gap-y-8">
             <div className="w-[69%] p-3 dark:bg-gray-800 shadow-md rounded-lg">
               <Calendar
                 localizer={localizer}
@@ -172,69 +172,95 @@ const CalendarPage: FC = () => {
                 }}
               />
             </div>
-            <div className="w-[30%] p-3 dark:bg-gray-800 rounded-lg shadow-md">
-              <h2 className="text-xl font-bold mb-4 text-green-600 dark:text-green-400">
-                {isNewEvent ? 'Add New Event' : 'Edit Event'}
-              </h2>
-              <form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2 dark:text-gray-300">
-                    Title
-                  </label>
-                  <input
-                    type="text"
-                    title="Event Title"
-                    placeholder="Enter event title..."
-                    value={selectedEvent?.title || ''}
-                    onChange={e => setSelectedEvent((prev: any) => 
-                      prev ? { ...prev, title: e.target.value } : null
-                    )}
-                    className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
-                    required
-                  />
-                </div>
+            <div className="w-full max-w-[30%] mt-4 justify-center flex flex-wrap dark:bg-gray-800 rounded-lg shadow-md mx-auto">
+              <div className="w-[95%]">           
+              <br></br>
+                <h2 className="text-xl text-center font-bold text-green-600 dark:text-green-400">
+                  {isNewEvent ? 'Add New Event' : 'Edita o evento'}
+                </h2><br></br>
                 
-                <div className="mb-4">
-                  <label className="block text-sm font-medium mb-2 dark:text-gray-300">
-                    Description
-                  </label>
-                  <textarea
-                    title="Event Description"
-                    placeholder="Enter event description..."
-                    value={selectedEvent?.description || ''}
-                    onChange={e => setSelectedEvent(prev => 
-                      prev ? { ...prev, description: e.target.value } : null
-                    )}
-                    className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
-                    rows={4}
-                  />
-                </div>
-                
-                <div className="flex gap-2">
-                  <button
-                    type="submit"
-                    className="flex-1 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
-                  >
-                    {isNewEvent ? 'Add Event' : 'Update Event'}
-                  </button>
-                  {!isNewEvent && selectedEvent && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        deleteEvent(selectedEvent.id);
-                        setSelectedEvent(null);
-                      }}
-                      className="flex-1 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600"
-                    >
-                      Delete
-                    </button>
-                  )}
-                </div>
-              </form>             
-            </div>
-        </div>
-      </div><br></br>
+                <form onSubmit={handleSubmit} className="w-full flex flex-wrap gap-4">
+                  {/* Title Field */}
+                  <div className="w-full">
+                    <label className="block text-sm font-medium dark:text-gray-300">Title</label>
+                    <input
+                      type="text"
+                      title="Event Title"
+                      placeholder="Enter event title..."
+                      value={selectedEvent?.title || ''}
+                      onChange={e => setSelectedEvent(prev => prev ? { ...prev, title: e.target.value } : null)}
+                      className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
+                      required
+                    />
+                  </div>
 
+                  {/* Start Date Field */}
+                  <div className="w-full">
+                    <label className="block text-sm font-medium dark:text-gray-300">Start Date</label>
+                    <input
+                      type="datetime-local"
+                      title="Event Start Date"
+                      value={selectedEvent?.start ? new Date(selectedEvent.start).toISOString().slice(0, 16) : ''}
+                      onChange={e => setSelectedEvent(prev => prev ? { ...prev, start: new Date(e.target.value) } : null)}
+                      className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
+                      required
+                    />
+                  </div>
+
+                  {/* End Date Field */}
+                  <div className="w-full">
+                    <label className="block text-sm font-medium dark:text-gray-300">End Date</label>
+                    <input
+                      type="datetime-local"
+                      title="Event End Date"
+                      value={selectedEvent?.end ? new Date(selectedEvent.end).toISOString().slice(0, 16) : ''}
+                      onChange={e => setSelectedEvent(prev => prev ? { ...prev, end: new Date(e.target.value) } : null)}
+                      className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
+                      required
+                    />
+                  </div>
+
+                  {/* Description Field */}
+                  <div className="w-full">
+                    <label className="block text-sm font-medium dark:text-gray-300">Description</label>
+                    <textarea
+                      title="Event Description"
+                      placeholder="Enter event description..."
+                      value={selectedEvent?.description || ''}
+                      onChange={e => setSelectedEvent(prev => prev ? { ...prev, description: e.target.value } : null)}
+                      className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
+                      rows={4}
+                    />
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="w-full flex justify-between gap-2">
+                    <button
+                      type="submit"
+                      className="flex-1 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
+                    >
+                      {isNewEvent ? 'Add Event' : 'Update'}
+                    </button>
+
+                    {!isNewEvent && selectedEvent && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          deleteEvent(selectedEvent.id);
+                          setSelectedEvent(null);
+                        }}
+                        className="flex-1 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600"
+                      >
+                        Delete
+                      </button>
+                    )}
+                  </div>
+                </form>
+
+              </div>
+            </div>
+          </div>  
+        </div><br></br>
         {/* Div4: Footer */}
         <footer className="bg-blue-900 text-white text-center py-4 mt-8">
           <p>Gracias a estos desarrolladores</p>

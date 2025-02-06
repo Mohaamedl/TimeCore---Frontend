@@ -122,23 +122,18 @@ const Profile: FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
-      <div className="max-w-4xl mx-auto px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-[75%] max-w-3x1 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
         {/* Profile Header */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden mb-6">
-          <div className="md:flex">
-            <div className="p-6 md:p-8">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Profile Settings</h1>
-              <p className="mt-2 text-gray-600 dark:text-gray-400">
-                Manage your account settings and preferences
-              </p>
-            </div>
-          </div>
-        </div>
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Profile Settings</h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">Manage your account settings and preferences</p>
+        </div><br></br>
 
         {/* Navigation */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm mb-6">
-          <nav className="flex space-x-4 p-4">
+        <div className="flex justify-center space-x-4 mb-6">
+          <nav className="flex gap-1 mt-4 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ease-in-out">
+          
             <button
               onClick={() => setActiveSection('profile')}
               className={`px-4 py-2 rounded-md text-sm font-medium ${
@@ -170,11 +165,11 @@ const Profile: FC = () => {
               Two-Factor Auth
             </button>
           </nav>
-        </div>
+        </div><br></br>
 
         {/* Content */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-          <div className="p-6 md:p-8">
+        <div className="space-y-6 items-center justify-center">
+          <div className="p-4 rounded-lg">
             {message && (
               <div className={`mb-6 p-4 rounded-md ${
                 message.type === 'success' 
@@ -328,7 +323,7 @@ const Profile: FC = () => {
                 )}
               </div>
             )}
-          </div>
+          </div><br></br>
         </div>
       </div>
     </div>
