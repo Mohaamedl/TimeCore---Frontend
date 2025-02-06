@@ -29,15 +29,11 @@ export const getUserProfile = async (): Promise<UserProfile> => {
 export const updateProfile = async (data: Partial<UserProfile>): Promise<UserProfile> => {
   try {
     const token = localStorage.getItem('token');
-    // Format mobile number if present
-    const formattedData = {
-      ...data,
-      mobile: data.mobile ? data.mobile.replace(/\D/g, '') : null // Remove non-digits
-    };
-    
-    const response = await axios.put(`${API_URL}/profile`, formattedData, {
+    console.log(data);
+    const response = await axios.put(`${API_URL}/profile`, data, {
       headers: { Authorization: `Bearer ${token}` }
     });
+    console.log(response);
     return response.data;
   } catch (error: any) {
     const message = error.response?.data?.message || 'Failed to update profile';

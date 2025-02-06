@@ -1,7 +1,17 @@
-import { FC, useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { getUserProfile, updateProfile, updatePassword, UserProfile } from '@/services/profileService';
+import { getUserProfile, updatePassword, updateProfile, UserProfile } from '@/services/profileService';
 import debounce from 'lodash/debounce';
+import { FC, useCallback, useEffect, useState } from 'react';
+import { Routes } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
+interface FormData extends UserProfile {
+  changedFields?: Set<string>;
+}
+
+interface TwoFactorAuth {
+  isEnabled: boolean;
+  sendTo: 'MOBILE' | 'EMAIL' | null;
+}
 
 const Profile: FC = () => {
   const navigate = useNavigate();
@@ -10,9 +20,25 @@ const Profile: FC = () => {
   const [activeSection, setActiveSection] = useState<'profile'|'security'|'2fa'>('profile');
   const [message, setMessage] = useState<{type: 'success'|'error', text: string} | null>(null);
   const [passwordData, setPasswordData] = useState({ current: '', new: '', confirm: '' });
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
+    id: 0,
     fullname: '',
-    mobile: ''
+    email: '',
+    mobile: '' ,
+    status: 'ACTIVE',
+    isVerified: false,
+    twoFactorAuth: {
+      isEnabled: false,
+      sendTo: "EMAIL"
+    },
+    picture: null,
+    role: 'USER',
+    changedFields: new Set()
+  });
+
+  const [twoFactorState, setTwoFactorState] = useState<TwoFactorAuth>({
+    isEnabled: profile?.twoFactorAuth?.isEnabled || false,
+    sendTo: profile?.twoFactorAuth?.sendTo || null
   });
 
   useEffect(() => {
@@ -22,8 +48,12 @@ const Profile: FC = () => {
   useEffect(() => {
     if (profile) {
       setFormData({
-        fullname: profile.fullname || '',
-        mobile: profile.mobile || ''
+        ...profile,
+        changedFields: new Set()
+      });
+      setTwoFactorState({
+        isEnabled: profile.twoFactorAuth.isEnabled,
+        sendTo: profile.twoFactorAuth.sendTo
       });
     }
   }, [profile]);
@@ -50,30 +80,34 @@ const Profile: FC = () => {
   };
 
   const debouncedUpdate = useCallback(
-    debounce((data: Partial<UserProfile>) => {
-      handleProfileUpdate(data);
+    debounce(async (data: UserProfile) => {
+      try {
+        await updateProfile(data);
+        setMessage({ type: 'success', text: 'Profile updated' });
+      } catch (error: any) {
+        setMessage({ 
+          type: 'error', 
+          text: error.message || 'Update failed' 
+        });
+      }
     }, 1000),
     []
   );
 
-  const handleInputChange = (field: string, value: string) => {
-    // Validate mobile number
-    if (field === 'mobile') {
-      // Allow only numbers, spaces, and special characters like +, -, ()
-      const formattedValue = value.replace(/[^\d\s+()-]/g, '');
-      setFormData(prev => ({
-        ...prev,
-        [field]: formattedValue
-      }));
-      debouncedUpdate({ [field]: formattedValue });
-      return;
-    }
-
+  const handleInputChange = (field: keyof UserProfile, value: any) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
+      changedFields: prev.changedFields?.add(field)
     }));
-    debouncedUpdate({ [field]: value });
+    
+    // Send entire object with changes
+    const updatedProfile = {
+      ...formData,
+      [field]: value
+    };
+    
+    debouncedUpdate(updatedProfile);
   };
 
   const handlePasswordUpdate = async () => {
@@ -103,6 +137,23 @@ const Profile: FC = () => {
         navigate('/');
       }
     }
+  };
+
+  const handleTwoFactorUpdate = (changes: Partial<TwoFactorAuth>) => {
+    const updatedTwoFactor = {
+      ...twoFactorState,
+      ...changes
+    };
+
+    setTwoFactorState(updatedTwoFactor);
+
+    // Send complete profile object
+    const updatedProfile = {
+      ...profile,
+      twoFactorAuth: updatedTwoFactor
+    };
+
+    debouncedUpdate(updatedProfile);
   };
 
   if (isLoading) {
@@ -218,7 +269,7 @@ const Profile: FC = () => {
                     pattern="[0-9\s+()-]*"
                     value={formData.mobile}
                     onChange={(e) => handleInputChange('mobile', e.target.value)}
-                    placeholder="+1 (234) 567-8900"
+                    placeholder="987456321"
                     className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   />
                   <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -284,43 +335,31 @@ const Profile: FC = () => {
                     </p>
                   </div>
                   <div>
-                    <button
-                      onClick={() => handleProfileUpdate({
-                        twoFactorAuth: {
-                          ...profile!.twoFactorAuth,
-                          isEnabled: !profile?.twoFactorAuth.isEnabled
-                        }
-                      })}
-                      className={`${
-                        profile?.twoFactorAuth.isEnabled
-                          ? 'bg-green-600'
-                          : 'bg-gray-200'
-                      } relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
-                    >
-                      <span
-                        className={`${
-                          profile?.twoFactorAuth.isEnabled ? 'translate-x-5' : 'translate-x-0'
-                        } inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`}
-                      />
-                    </button>
+                    <Routes
+                      checked={twoFactorState.isEnabled}
+                      onChange={(checked: any) => handleTwoFactorUpdate({ isEnabled: checked })}
+                      className="relative inline-flex h-6 w-11"
+                      >
+                        
+                      </Routes>
+
+
                   </div>
                 </div>
 
-                {profile?.twoFactorAuth.isEnabled && (
-                  <div className="mt-6">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Verification Method
+                {twoFactorState.isEnabled && (
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium mb-2">
+                      Receive codes via:
                     </label>
                     <select
-                      value={profile.twoFactorAuth.sendTo || ''}
-                      onChange={(e) => handleProfileUpdate({
-                        twoFactorAuth: {
-                          ...profile.twoFactorAuth,
-                          sendTo: e.target.value as 'MOBILE' | 'EMAIL'
-                        }
+                      value={twoFactorState.sendTo || ''}
+                      onChange={(e) => handleTwoFactorUpdate({ 
+                        sendTo: e.target.value as 'MOBILE' | 'EMAIL' | null 
                       })}
-                      className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      className="w-full px-3 py-2 border rounded-md"
                     >
+                      <option value="">Select method</option>
                       <option value="EMAIL">Email</option>
                       <option value="MOBILE">Mobile</option>
                     </select>
