@@ -14,25 +14,24 @@ const Navbar: FC = () => {
   const imageUrl = "http://localhost:5173/src/assets/logo.png";
 
   return (
-    <nav className="flex items-center justify-between px-6 py-4 bg-[#7583f6] p-4 text-white">
+    <nav className="flex items-center justify-between px-6 py-4 bg-[#7583f6] p-4 text-[#ffffff]">
       {/* Logo alineado a la izquierda con espaciado */}
       <a href="http://localhost:5173/calendar">
         <img src={imageUrl} alt="User Avatar" className="w-14 h-14 rounded-full object-cover shadow-lg" />
       </a>
 
       {/* Título centrado */}
-      <Link to="/calendar" className="text-gray-900 dark:text-white text-xl font-semibold">
-        Calendario - TimeCore
-      </Link>
+      <a href="http://localhost:5173/calendar">
+        <p className="text-[#ffffff] text-lg font-bold">Calendario - TimeCore</p>
+      </a>
 
       {/* Botón de perfil alineado a la derecha */}
       <div className="relative">
+      {/* Profile Button */}
         <button
           onClick={() => setIsProfileOpen(!isProfileOpen)}
-          className="flex items-center space-x-2 text-gray-900 dark:text-white hover:bg-green-600 dark:hover:bg-green-700 px-3 py-2 rounded-md"
-        >
-          <span className="hidden md:block">My Account</span>
-          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          className="flex items-center space-x-2 bg-[#240960] text-[#ffffff] px-4 py-2 rounded-md hover:bg-[#3a0e91] transition">
+          <svg className="h-6 w-6 text-[#ffffff]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -41,29 +40,29 @@ const Navbar: FC = () => {
             />
           </svg>
         </button>
-
-        {/* Dropdown menu */}
+      
+        {/* Dropdown Menu */}
         {isProfileOpen && (
-          <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5">
+          <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-[#ffffff] p-3"><br></br>
             <Link
               to="/profile"
-              className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="block px-4 py-2 text-sm text-[#ffffff] text-center"
               onClick={() => setIsProfileOpen(false)}
             >
-              Profile Settings
-            </Link>
+              Configurações
+            </Link><br></br>
             <button
               onClick={() => {
                 handleLogout();
                 setIsProfileOpen(false);
               }}
-              className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="block w-full text-center px-4 py-2 text-sm font-semibold text-[#240960] bg-[#7583f6] rounded-md hover:bg-[#5e6be6] transition"
             >
-              Sign out
+              Sair
             </button>
           </div>
         )}
-      </div>
+      </div>    
     </nav>
   );
 };

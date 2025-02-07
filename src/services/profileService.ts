@@ -86,7 +86,7 @@ export const sendVerificationOtp = async (verificationType: VerificationType): P
       { headers: { Authorization: `Bearer ${token}` }}
     );
   } catch (error: any) {
-    throw new Error(error.response?.data || 'Failed to send verification code');
+    throw new Error(error.response?.data || 'Falha ao enviar o código de verificação');
   }
 };
 
@@ -100,7 +100,7 @@ export const verifyAndEnableTwoFactor = async (otp: string): Promise<UserProfile
     );
     return response.data;
   } catch (error: any) {
-    throw new Error(error.response?.data || 'Failed to verify OTP');
+    throw new Error(error.response?.data || 'Falha ao verificar OTP');
   }
 };
 
@@ -127,6 +127,6 @@ export const updateTwoFactorStatus = async (enabled: boolean, sendTo?: 'EMAIL' |
 
     return response.data;
   } catch (error: any) {
-    throw new Error(error.response?.data?.message || 'Failed to update 2FA status');
+    throw new Error(error.response?.data?.message || 'Falha ao atualizar o status 2FA');
   }
 };

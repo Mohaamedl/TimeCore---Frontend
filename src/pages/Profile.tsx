@@ -68,9 +68,9 @@ const Profile: FC = () => {
     try {
       const updated = await updateProfile(data);
       setProfile(updated);
-      setMessage({ type: 'success', text: 'Profile updated successfully' });
+      setMessage({ type: 'success', text: 'Perfil atualizado com sucesso' });
     } catch (error) {
-      setMessage({ type: 'error', text: 'Failed to update profile' });
+      setMessage({ type: 'error', text: 'Falha ao atualizar o perfil' });
     }
   };
 
@@ -114,13 +114,13 @@ const Profile: FC = () => {
       }
 
       await updatePassword(passwordData.current, passwordData.new);
-      setMessage({ type: 'success', text: 'Password updated successfully' });
+      setMessage({ type: 'success', text: 'As palavras-passe não correspondem' });
       setPasswordData({ current: '', new: '', confirm: '' });
     } catch (error: any) {
       console.error('Password update error:', error);
       setMessage({ 
         type: 'error', 
-        text: error.response?.data?.message || 'Failed to update password' 
+        text: error.response?.data?.message || 'Falha ao atualizar a senha' 
       });
       
       if (error.response?.status === 401 || error.response?.status === 403) {
@@ -137,7 +137,7 @@ const Profile: FC = () => {
         await updateTwoFactorStatus(false);
         const updatedProfile = await getUserProfile();
         setProfile(updatedProfile);
-        setMessage({ type: 'success', text: 'Two-factor authentication disabled successfully' });
+        setMessage({ type: 'success', text: 'Autenticação de dois fatores desativada com êxito' });
       } else {
         // Start enable 2FA flow
         setOtpVerification({
@@ -146,12 +146,12 @@ const Profile: FC = () => {
           verificationType: 'EMAIL'
         });
         await sendVerificationOtp('EMAIL');
-        setMessage({ type: 'success', text: 'Verification code sent to your email' });
+        setMessage({ type: 'success', text: 'Código de verificação enviado para o seu e-mail' });
       }
     } catch (error: any) {
       setMessage({ 
         type: 'error', 
-        text: error.message || 'Failed to update 2FA status'
+        text: error.message || 'Falha ao atualizar o status 2FA'
       });
     } finally {
       setIsTwoFactorLoading(false);
@@ -163,23 +163,23 @@ const Profile: FC = () => {
       const updatedUser = await verifyAndEnableTwoFactor(otpVerification.otp);
       setProfile(updatedUser);
       setOtpVerification({ isVerifying: false, otp: '', verificationType: 'EMAIL' });
-      setMessage({ type: 'success', text: 'Two-factor authentication enabled successfully' });
+      setMessage({ type: 'success', text: 'Autenticação de dois fatores ativada com êxito' });
     } catch (error) {
-      setMessage({ type: 'error', text: 'Invalid verification code' });
+      setMessage({ type: 'error', text: 'Código de verificação inválido' });
     }
   };
 
   const render2FASection = () => (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-colum items-center">
         <div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-            Two-Factor Authentication
+          <h3 className="block text-sm font-medium text-gray-500 dark:text-gray-00 mb-2">
+          Autenticação de dois fatores
           </h3>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             {profile?.twoFactorAuth.enabled  
-              ? 'Two-factor authentication is enabled' 
-              : 'Two-factor authentication is disabled'}
+              ? 'A autenticação está habilitada' 
+              : 'A autenticação está desativada'}
           </p>
         </div>
         
@@ -187,19 +187,19 @@ const Profile: FC = () => {
           <div className="space-y-4">
             <input
               type="text"
-              placeholder="Enter verification code"
+              placeholder="Insira o código"              
               value={otpVerification.otp}
               onChange={(e) => setOtpVerification({
                 ...otpVerification,
                 otp: e.target.value
               })}
-              className="px-4 py-2 border rounded-md"
-            />
+              className="w-full px-3 py-2 shadow-lg border border-gray-200 rounded-md text-[#240960] placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+            /><br></br>
             <button
               onClick={handleVerifyOtp}
               className="ml-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
             >
-              Verify
+              Verificar
             </button>
           </div>
         ) : (
@@ -240,12 +240,12 @@ const Profile: FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="w-[75%] max-w-3x1 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+    <div className="min-h-screen flex items-center justify-center  bg-[#240960] py-12 px-4 sm:px-6 lg:px-8">
+      <div className="bg-[#ffffff] flex flex-col items-center p-6 md:p-8 rounded-lg shadow-lg w-full max-w-md">
         {/* Profile Header */}
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Profile Settings</h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">Manage your account settings and preferences</p>
+          <h1 className="text-3xl font-bold text-[#240960]">Configurações</h1><br></br>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">Gerir as definições e preferências da sua conta</p>
         </div><br></br>
 
         {/* Navigation */}
@@ -284,9 +284,8 @@ const Profile: FC = () => {
             </button>
           </nav>
         </div><br></br>
-
         {/* Content */}
-        <div className="space-y-6 items-center justify-center">
+        <div className="space-y-6">
           <div className="p-4 rounded-lg">
             {message && (
               <div className={`mb-6 p-4 rounded-md ${
@@ -301,30 +300,30 @@ const Profile: FC = () => {
             {activeSection === 'profile' && (
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Full Name
+                  <label className="block text-sm font-medium text-gray-500 dark:text-gray-500 mb-2">
+                    Nome completo
                   </label>
                   <input
                     type="text"
                     value={formData.fullname}
                     onChange={(e) => handleInputChange('fullname', e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-10 dark:bg-gray-200 dark:border-gray-300 dark:text-gray-400"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Email Address
+                  <label className="block text-sm font-medium text-gray-500 dark:text-gray-00 mb-2">
+                    Email
                   </label>
                   <input
                     type="email"
                     value={profile?.email || ''}
                     disabled
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50 dark:bg-gray-600 dark:border-gray-500 dark:text-gray-300"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-10 dark:bg-gray-200 dark:border-gray-300 dark:text-gray-400"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Mobile Number
+                  <label className="block text-sm font-medium text-gray-500 dark:text-gray-500 mb-2">
+                    Númbero de telemovel
                   </label>
                   <input
                     type="tel"
@@ -332,10 +331,10 @@ const Profile: FC = () => {
                     value={formData.mobile}
                     onChange={(e) => handleInputChange('mobile', e.target.value)}
                     placeholder="+1 (234) 567-8900"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-10 dark:bg-gray-200 dark:border-gray-300 dark:text-gray-400"
                   />
                   <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Enter mobile number with country code (e.g., +1 234 567 8900)
+                  Introduza o número de telemóvel com o indicativo do país
                   </p>
                 </div>
               </div>
@@ -344,43 +343,43 @@ const Profile: FC = () => {
             {activeSection === 'security' && (
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Current Password
+                  <label className="block text-sm font-medium text-gray-500 dark:text-gray-500 mb-2">
+                  Palavra-passe atual
                   </label>
                   <input
                     type="password"
                     value={passwordData.current}
                     onChange={(e) => setPasswordData({ ...passwordData, current: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-10 dark:bg-gray-200 dark:border-gray-300 dark:text-gray-400"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    New Password
+                  <label className="block text-sm font-medium text-gray-500 dark:text-gray-500 mb-2">
+                  Nova palavra-passe
                   </label>
                   <input
                     type="password"
                     value={passwordData.new}
                     onChange={(e) => setPasswordData({ ...passwordData, new: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-10 dark:bg-gray-200 dark:border-gray-300 dark:text-gray-400"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Confirm New Password
+                  <label className="block text-sm font-medium text-gray-500 dark:text-gray-500 mb-2">
+                    Confirma Nova palavra-passe
                   </label>
                   <input
                     type="password"
                     value={passwordData.confirm}
                     onChange={(e) => setPasswordData({ ...passwordData, confirm: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-10 dark:bg-gray-200 dark:border-gray-300 dark:text-gray-400"
                   />
-                </div>
+                </div><br></br>
                 <button
                   onClick={handlePasswordUpdate}
                   className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
                 >
-                  Update Password
+                  Atualizar palavra-passe
                 </button>
               </div>
             )}

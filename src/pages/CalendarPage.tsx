@@ -20,7 +20,7 @@ const CalendarPage: FC = () => {
   const handleSelectSlot = useCallback(({ start, end }: { start: Date; end: Date }) => {
     const newEvent = { 
       id: Date.now().toString(),
-      title: 'New Event',
+      title: 'Nova atividade',
       start: new Date(start),
       end: new Date(end),
       isDraft: true
@@ -103,7 +103,7 @@ const CalendarPage: FC = () => {
   const eventStyleGetter = (event: CalendarEvent) => {
     return {
       style: {
-        backgroundColor: event.isDraft ? '#795548' : '#4caf50',
+        backgroundColor: event.isDraft ? '#3c67bf' : '#3428ba',
         opacity: event.isDraft ? 0.7 : 1
       }
     };
@@ -111,17 +111,17 @@ const CalendarPage: FC = () => {
 
   return (
     <div className='mx-auto max-w-screen-2xl px-4 md:px-8'>
-      <div className="min-h-screen bg-gray-100">
-      <div className="h-[40px]">
+      <div className="min-h-screen bg-gradient-to-r from-[#ffffff] to-[#85abff]">
+      <div className="h-[50px]">
       </div>
         {/* Div1: Contenedor principal */}
         <div className="container mx-auto mt-20 w-11/12">
           {/* Div2: Sección horizontal dividida en 70% y 30% */}
-          <div className="flex justify-between">
-            <div className="w-8/9 p-3 justify-center flex items-center shadow-md rounded-sm">
-              <p className="text-center">lista de horario</p>
+          <div className="flex flex-colum justify-between">
+            <div className="w-8/9 p-3 bg-gradient-to-b from-[#ffffff] to-[#a5aeff] justify-center flex items-center shadow-lg rounded-sm">
+              <p className="text-center text-[#ffffff]">lista de horario</p>
             </div>
-            <div className="w-1/8">
+            <div className="w-auto">
               <input
                   type="file"
                   ref={fileInputRef}
@@ -146,124 +146,127 @@ const CalendarPage: FC = () => {
           </div><br></br>
 
           {/* Div3: Sección vertical dividida en 70% y 30% */}
-          <div className="flex flex-wrap gap-2 gap-y-8">
-            <div className="w-[69%] p-3 dark:bg-gray-800 shadow-md rounded-lg">
-              <Calendar
-                localizer={localizer}
-                events={allEvents}
-                startAccessor="start"
-                endAccessor="end"
-                style={{ height: 'calc(100% - 60px)' }}
-                onSelectSlot={handleSelectSlot}
-                onSelectEvent={handleSelectEvent}
-                onView={setView}
-                view={view}
-                selectable
-                popup
-                longPressThreshold={250}
-                eventPropGetter={eventStyleGetter}
-                views={['month', 'week', 'day', 'agenda']}
-                messages={{
-                  noEventsInRange: 'No events scheduled',
-                  allDay: 'All day',
-                  date: 'Date',
-                  time: 'Time',
-                  event: 'Event',
-                }}
-              />
-            </div>
-            <div className="w-full max-w-[30%] mt-4 justify-center flex flex-wrap dark:bg-gray-800 rounded-lg shadow-md mx-auto">
-              <div className="w-[95%]">           
-              <br></br>
-                <h2 className="text-xl text-center font-bold text-green-600 dark:text-green-400">
-                  {isNewEvent ? 'Add New Event' : 'Edita o evento'}
-                </h2><br></br>
-                
-                <form onSubmit={handleSubmit} className="w-full flex flex-wrap gap-4">
-                  {/* Title Field */}
-                  <div className="w-full">
-                    <label className="block text-sm font-medium dark:text-gray-300">Title</label>
-                    <input
-                      type="text"
-                      title="Event Title"
-                      placeholder="Enter event title..."
-                      value={selectedEvent?.title || ''}
-                      onChange={e => setSelectedEvent(prev => prev ? { ...prev, title: e.target.value } : null)}
-                      className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
-                      required
-                    />
-                  </div>
+          <div className="flex flex-col lg:flex-row gap-2 mx-auto w-full p-4">
+  {/* Calendar Section - Takes More Space */}
+  <div className="flex-1 bg-white shadow-md rounded-lg p-3">
+    <Calendar
+      localizer={localizer}
+      events={allEvents}
+      startAccessor="start"
+      endAccessor="end"
+      style={{ height: 'calc(100% - 60px)' }}
+      onSelectSlot={handleSelectSlot}
+      onSelectEvent={handleSelectEvent}
+      onView={setView}
+      view={view}
+      selectable
+      popup
+      longPressThreshold={250}
+      eventPropGetter={eventStyleGetter}
+      views={['month', 'week', 'day', 'agenda']}
+      messages={{
+        noEventsInRange: 'No events scheduled',
+        allDay: 'All day',
+        date: 'Date',
+        time: 'Time',
+        event: 'Event',
+      }}
+    />
+  </div>
 
-                  {/* Start Date Field */}
-                  <div className="w-full">
-                    <label className="block text-sm font-medium dark:text-gray-300">Start Date</label>
-                    <input
-                      type="datetime-local"
-                      title="Event Start Date"
-                      value={selectedEvent?.start ? new Date(selectedEvent.start).toISOString().slice(0, 16) : ''}
-                      onChange={e => setSelectedEvent(prev => prev ? { ...prev, start: new Date(e.target.value) } : null)}
-                      className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
-                      required
-                    />
-                  </div>
+  {/* Form Section - Sidebar */}
+  <div className="lg:w-1/3 w-full bg-[#5284ff] rounded-lg shadow-md p-6">
+    <h2 className="text-xl text-center font-bold text-white mb-4">
+      {isNewEvent ? 'Add New Event' : 'Edit Event'}
+    </h2>
 
-                  {/* End Date Field */}
-                  <div className="w-full">
-                    <label className="block text-sm font-medium dark:text-gray-300">End Date</label>
-                    <input
-                      type="datetime-local"
-                      title="Event End Date"
-                      value={selectedEvent?.end ? new Date(selectedEvent.end).toISOString().slice(0, 16) : ''}
-                      onChange={e => setSelectedEvent(prev => prev ? { ...prev, end: new Date(e.target.value) } : null)}
-                      className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
-                      required
-                    />
-                  </div>
+    <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
+      {/* Title Field */}
+      <div>
+        <label className="block text-sm font-medium text-white">Title</label>
+        <input
+          type="text"
+          title="Event Title"
+          placeholder="Enter a title..."
+          value={selectedEvent?.title || ''}
+          onChange={e => setSelectedEvent(prev => prev ? { ...prev, title: e.target.value } : null)}
+          className="w-full px-3 py-2 border rounded-lg bg-white text-black"
+          required
+        />
+      </div>
 
-                  {/* Description Field */}
-                  <div className="w-full">
-                    <label className="block text-sm font-medium dark:text-gray-300">Description</label>
-                    <textarea
-                      title="Event Description"
-                      placeholder="Enter event description..."
-                      value={selectedEvent?.description || ''}
-                      onChange={e => setSelectedEvent(prev => prev ? { ...prev, description: e.target.value } : null)}
-                      className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
-                      rows={4}
-                    />
-                  </div>
+      {/* Start Date Field */}
+      <div>
+        <label className="block text-sm font-medium text-white">Start Date</label>
+        <input
+          type="datetime-local"
+          title="Event Start Date"
+          value={selectedEvent?.start ? new Date(selectedEvent.start).toISOString().slice(0, 16) : ''}
+          onChange={e => setSelectedEvent(prev => prev ? { ...prev, start: new Date(e.target.value) } : null)}
+          className="w-full px-3 py-2 border rounded-lg bg-white text-black"
+          required
+        />
+      </div>
 
-                  {/* Action Buttons */}
-                  <div className="w-full flex justify-between gap-2">
-                    <button
-                      type="submit"
-                      className="flex-1 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
-                    >
-                      {isNewEvent ? 'Add Event' : 'Update'}
-                    </button>
+      {/* End Date Field */}
+      <div>
+        <label className="block text-sm font-medium text-white">End Date</label>
+        <input
+          type="datetime-local"
+          title="Event End Date"
+          value={selectedEvent?.end ? new Date(selectedEvent.end).toISOString().slice(0, 16) : ''}
+          onChange={e => setSelectedEvent(prev => prev ? { ...prev, end: new Date(e.target.value) } : null)}
+          className="w-full px-3 py-2 border rounded-lg bg-white text-black"
+          required
+        />
+      </div>
 
-                    {!isNewEvent && selectedEvent && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          deleteEvent(selectedEvent.id);
-                          setSelectedEvent(null);
-                        }}
-                        className="flex-1 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600"
-                      >
-                        Delete
-                      </button>
-                    )}
-                  </div>
-                </form>
+      {/* Description Field */}
+      <div>
+        <label className="block text-sm font-medium text-white">Description</label>
+        <textarea
+          title="Event Description"
+          placeholder="Enter a description..."
+          value={selectedEvent?.description || ''}
+          onChange={e => setSelectedEvent(prev => prev ? { ...prev, description: e.target.value } : null)}
+          className="w-full px-3 py-2 border rounded-lg bg-white text-black"
+          rows={4}
+        />
+      </div>
 
-              </div>
-            </div>
-          </div>  
+      {/* Action Buttons */}
+      <div className="flex justify-between gap-2">
+        <button
+          type="submit"
+          className="flex-1 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
+        >
+          {isNewEvent ? 'Add Event' : 'Update'}
+        </button>
+
+        {!isNewEvent && selectedEvent && (
+          <button
+            type="button"
+            onClick={() => {
+              deleteEvent(selectedEvent.id);
+              setSelectedEvent(null);
+            }}
+            className="flex-1 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600"
+          >
+            Delete
+          </button>
+        )}
+      </div>
+    </form>
+  </div>
+</div>
+
         </div><br></br>
         {/* Div4: Footer */}
-        <footer className="bg-blue-900 text-white text-center py-4 mt-8">
-          <p>Gracias a estos desarrolladores</p>
+        <footer className="bg-[#240960] text-white text-center py-4 mt-8">
+        <p className="text-center text-gray-300 text-sm">
+      © {new Date().getFullYear()} Desenvolvido por <span className="font-semibold">Gen Contreras | Mohamed Haddadi | Gabriel Reis</span>. Todos os dereitos reservados.
+        </p>
+
         </footer>
       </div>
     </div>

@@ -42,10 +42,10 @@ const Register: FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="bg-white dark:bg-gray-800 flex flex-col items-center p-6 md:p-8 rounded-lg shadow-lg w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-[#240960] py-12 px-4 sm:px-6 lg:px-8">
+      <div className="bg-[#ffffff] flex flex-col items-center p-6 md:p-8 rounded-lg shadow-lg w-full max-w-md">
         <br></br>
-        <h2 className="text-2xl font-bold text-center text-green-600 dark:text-green-400 mb-4">Registo</h2>
+        <h2 className="text-2xl font-bold text-center text-[#240960] mb-4">Registo</h2>
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md w-full text-center mb-4" role="alert">
             <span className="block sm:inline">{error}</span>
@@ -58,7 +58,7 @@ const Register: FC = () => {
               id="fullname"
               value={userData.fullname}
               onChange={(e) => setUserData({ ...userData, fullname: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-green-500 focus:border-green-500 md:text-lg"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-[#240960] placeholder-gray-500 focus:outline-none focus:ring-green-500 focus:border-green-500 md:text-lg"
               placeholder='Nome e apelido'
               required
             />
@@ -68,7 +68,7 @@ const Register: FC = () => {
               id="email"
               value={userData.email}
               onChange={(e) => setUserData({ ...userData, email: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-green-500 focus:border-green-500 md:text-lg"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-[#240960] placeholder-gray-500 focus:outline-none focus:ring-green-500 focus:border-green-500 md:text-lg"
               placeholder='Email'
               required
             />
@@ -78,7 +78,7 @@ const Register: FC = () => {
               id="password"
               value={userData.password}
               onChange={(e) => setUserData({ ...userData, password: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-green-500 focus:border-green-500 md:text-lg"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md text-[#240960] placeholder-gray-500 focus:outline-none focus:ring-green-500 focus:border-green-500 md:text-lg"
               placeholder='Senha'
               required
             />
@@ -95,7 +95,7 @@ const Register: FC = () => {
             {/* Link de registro */}
             <div className="text-center">
               <a href="http://localhost:5173/" className="text-sm text-green-600 hover:text-green-500">
-              Já tem uma conta? Fazer login
+              Já tem uma conta? Faça login
               </a>
             </div>
             <br></br>
