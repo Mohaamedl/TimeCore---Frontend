@@ -1,7 +1,26 @@
-import { FC, useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { getUserProfile, updateProfile, updatePassword, UserProfile } from '@/services/profileService';
+import { getUserProfile, updatePassword, updateProfile, UserProfile, sendVerificationOtp, verifyAndEnableTwoFactor, VerificationType, updateTwoFactorStatus } from '@/services/profileService';
 import debounce from 'lodash/debounce';
+import { FC, useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+const Switch = ({ enabled, onChange }: { enabled: boolean; onChange: () => void }) => (
+  <button
+    onClick={onChange}
+    className={`
+      relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 
+      border-transparent transition-colors duration-200 ease-in-out focus:outline-none
+      ${enabled ? 'bg-green-600' : 'bg-gray-200'}
+    `}
+  >
+    <span
+      className={`
+        ${enabled ? 'translate-x-5' : 'translate-x-0'}
+        pointer-events-none inline-block h-5 w-5 transform rounded-full 
+        bg-white shadow ring-0 transition duration-200 ease-in-out
+      `}
+    />
+  </button>
+);
 
 const Profile: FC = () => {
   const navigate = useNavigate();
@@ -13,6 +32,12 @@ const Profile: FC = () => {
   const [formData, setFormData] = useState({
     fullname: '',
     mobile: ''
+  });
+  const [isTwoFactorLoading, setIsTwoFactorLoading] = useState(false);
+  const [otpVerification, setOtpVerification] = useState({
+    isVerifying: false,
+    otp: '',
+    verificationType: 'EMAIL' as VerificationType
   });
 
   useEffect(() => {
@@ -57,7 +82,6 @@ const Profile: FC = () => {
   );
 
   const handleInputChange = (field: string, value: string) => {
-    // Validate mobile number
     if (field === 'mobile') {
       // Allow only numbers, spaces, and special characters like +, -, ()
       const formattedValue = value.replace(/[^\d\s+()-]/g, '');
@@ -104,6 +128,100 @@ const Profile: FC = () => {
       }
     }
   };
+
+  const handleTwoFactorToggle = async () => {
+    setIsTwoFactorLoading(true);
+    try {
+      if (profile?.twoFactorAuth.enabled) { 
+        // Disable 2FA
+        await updateTwoFactorStatus(false);
+        const updatedProfile = await getUserProfile();
+        setProfile(updatedProfile);
+        setMessage({ type: 'success', text: 'Two-factor authentication disabled successfully' });
+      } else {
+        // Start enable 2FA flow
+        setOtpVerification({
+          isVerifying: true,
+          otp: '',
+          verificationType: 'EMAIL'
+        });
+        await sendVerificationOtp('EMAIL');
+        setMessage({ type: 'success', text: 'Verification code sent to your email' });
+      }
+    } catch (error: any) {
+      setMessage({ 
+        type: 'error', 
+        text: error.message || 'Failed to update 2FA status'
+      });
+    } finally {
+      setIsTwoFactorLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    try {
+      const updatedUser = await verifyAndEnableTwoFactor(otpVerification.otp);
+      setProfile(updatedUser);
+      setOtpVerification({ isVerifying: false, otp: '', verificationType: 'EMAIL' });
+      setMessage({ type: 'success', text: 'Two-factor authentication enabled successfully' });
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Invalid verification code' });
+    }
+  };
+
+  const render2FASection = () => (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+            Two-Factor Authentication
+          </h3>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            {profile?.twoFactorAuth.enabled  
+              ? 'Two-factor authentication is enabled' 
+              : 'Two-factor authentication is disabled'}
+          </p>
+        </div>
+        
+        {otpVerification.isVerifying ? (
+          <div className="space-y-4">
+            <input
+              type="text"
+              placeholder="Enter verification code"
+              value={otpVerification.otp}
+              onChange={(e) => setOtpVerification({
+                ...otpVerification,
+                otp: e.target.value
+              })}
+              className="px-4 py-2 border rounded-md"
+            />
+            <button
+              onClick={handleVerifyOtp}
+              className="ml-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+            >
+              Verify
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={handleTwoFactorToggle}
+            disabled={isTwoFactorLoading}
+            className={`px-4 py-2 rounded-md ${
+              profile?.twoFactorAuth.enabled  
+                ? 'bg-red-500 hover:bg-red-600' 
+                : 'bg-green-500 hover:bg-green-600'
+            } text-white font-medium transition-colors`}
+          >
+            {isTwoFactorLoading 
+              ? 'Processing...' 
+              : profile?.twoFactorAuth.enabled 
+                ? 'Disable 2FA' 
+                : 'Enable 2FA'}
+          </button>
+        )}
+      </div>
+    </div>
+  );
 
   if (isLoading) {
     return (
@@ -267,62 +385,7 @@ const Profile: FC = () => {
               </div>
             )}
 
-            {activeSection === '2fa' && (
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                      Two-Factor Authentication
-                    </h3>
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                      Add an extra layer of security to your account
-                    </p>
-                  </div>
-                  <div>
-                    <button
-                      onClick={() => handleProfileUpdate({
-                        twoFactorAuth: {
-                          ...profile!.twoFactorAuth,
-                          isEnabled: !profile?.twoFactorAuth.isEnabled
-                        }
-                      })}
-                      className={`${
-                        profile?.twoFactorAuth.isEnabled
-                          ? 'bg-green-600'
-                          : 'bg-gray-200'
-                      } relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
-                    >
-                      <span
-                        className={`${
-                          profile?.twoFactorAuth.isEnabled ? 'translate-x-5' : 'translate-x-0'
-                        } inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out`}
-                      />
-                    </button>
-                  </div>
-                </div>
-
-                {profile?.twoFactorAuth.isEnabled && (
-                  <div className="mt-6">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Verification Method
-                    </label>
-                    <select
-                      value={profile.twoFactorAuth.sendTo || ''}
-                      onChange={(e) => handleProfileUpdate({
-                        twoFactorAuth: {
-                          ...profile.twoFactorAuth,
-                          sendTo: e.target.value as 'MOBILE' | 'EMAIL'
-                        }
-                      })}
-                      className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    >
-                      <option value="EMAIL">Email</option>
-                      <option value="MOBILE">Mobile</option>
-                    </select>
-                  </div>
-                )}
-              </div>
-            )}
+            {activeSection === '2fa' && render2FASection()}
           </div><br></br>
         </div>
       </div>

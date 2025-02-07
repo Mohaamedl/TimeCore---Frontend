@@ -5,12 +5,10 @@ import { CalendarEvent } from '@/store/CalendarStore';
 
 const API_URL = 'http://localhost:8080/auth';
 
-// Create axios instance with default config
 const api = axios.create({
   baseURL: 'http://localhost:8080',
 });
 
-// Add request interceptor to include token
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -26,7 +24,6 @@ api.interceptors.request.use(
   }
 );
 
-// Add response interceptor
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -65,13 +62,11 @@ export const login = async (email: string, password: string): Promise<AuthRespon
   try {
     const response = await axios.post(`${API_URL}/signin`, { email, password });
     
-    // Handle successful login with JWT
     if (response.data.jwt) {
       localStorage.setItem('token', response.data.jwt);
       return response.data;
     }
     
-    // Handle 2FA requirement
     if (response.data.twoFactorAuthEnabled) {
       return {
         requiresTwoFactor: true,
@@ -127,7 +122,6 @@ export const importEventsFromPDF = async (file: File): Promise<CalendarEvent[]> 
     throw new Error('No file selected');
   }
 
-  // Validate file type and size
   if (!file.type.includes('pdf')) {
     throw new Error('Please select a PDF file');
   }
