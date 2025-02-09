@@ -26,7 +26,7 @@ The project structure is organized as follows:
 -   `public/`: Static assets.
 -   `vite.config.ts`: Vite configuration file.
 -   `package.json`: npm package file.
--   `USERGUIDE.md`: User guide documentation.
+-   `USERGUIDE.md`: [User guide documentation](USERGUIDE.md).
 -   `README.md`: Project documentation.
 
 ## Getting Started
