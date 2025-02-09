@@ -1,7 +1,6 @@
-import axios from 'axios';
+import { CalendarEvent, useCalendarStore } from '@/store/CalendarStore';
 import { AuthResponse, UserData } from '@/types/auth';
-import { useCalendarStore } from '@/store/CalendarStore';
-import { CalendarEvent } from '@/store/CalendarStore';
+import axios from 'axios';
 
 const API_URL = 'http://localhost:8080/auth';
 
@@ -98,7 +97,7 @@ export const verifyTwoFactor = async (otp: string, session: string) => {
 
 export const logout = (): void => {
  
-  localStorage.removeItem('calendar-storage');
+  localStorage.setItem('calendar-storage', " ");
    localStorage.removeItem('token');
   useCalendarStore.getState().clearEvents();
   window.location.href = '/';
@@ -174,3 +173,4 @@ export const importEventsFromPDF = async (file: File): Promise<CalendarEvent[]> 
 
 export { api };
 export type { UserData };
+

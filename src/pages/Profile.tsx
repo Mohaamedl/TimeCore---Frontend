@@ -29,7 +29,8 @@ const Profile: FC = () => {
   const [activeSection, setActiveSection] = useState<'profile'|'security'|'2fa'>('profile');
   const [message, setMessage] = useState<{type: 'success'|'error', text: string} | null>(null);
   const [passwordData, setPasswordData] = useState({ current: '', new: '', confirm: '' });
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
+    id: 0,
     fullname: '',
     mobile: ''
   });
@@ -47,8 +48,12 @@ const Profile: FC = () => {
   useEffect(() => {
     if (profile) {
       setFormData({
-        fullname: profile.fullname || '',
-        mobile: profile.mobile || ''
+        ...profile,
+        changedFields: new Set()
+      });
+      setTwoFactorState({
+        isEnabled: profile.twoFactorAuth.isEnabled,
+        sendTo: profile.twoFactorAuth.sendTo
       });
     }
   }, [profile]);
@@ -75,8 +80,16 @@ const Profile: FC = () => {
   };
 
   const debouncedUpdate = useCallback(
-    debounce((data: Partial<UserProfile>) => {
-      handleProfileUpdate(data);
+    debounce(async (data: UserProfile) => {
+      try {
+        await updateProfile(data);
+        setMessage({ type: 'success', text: 'Profile updated' });
+      } catch (error: any) {
+        setMessage({ 
+          type: 'error', 
+          text: error.message || 'Update failed' 
+        });
+      }
     }, 1000),
     []
   );
@@ -95,9 +108,17 @@ const Profile: FC = () => {
 
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
+      changedFields: prev.changedFields?.add(field)
     }));
-    debouncedUpdate({ [field]: value });
+    
+    // Send entire object with changes
+    const updatedProfile = {
+      ...formData,
+      [field]: value
+    };
+    
+    debouncedUpdate(updatedProfile);
   };
 
   const handlePasswordUpdate = async () => {
