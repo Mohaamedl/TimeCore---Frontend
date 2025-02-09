@@ -18,7 +18,7 @@ const App: FC = () => {
         <Navbar />
         <main className="flex-1 pt-16"> {/* Add padding-top to account for fixed navbar */}
           <Routes>
-            <Route path="/" element={<Login />} />
+            <Route path="/" element={<Login />} />            
             <Route path="/register" element={<Register />} />
             <Route path="/calendar" element={<PrivateRoute><CalendarPage /></PrivateRoute>} />
             <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />

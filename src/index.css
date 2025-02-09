@@ -1,10 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* ... */
-
-
+@import "tailwindcss";
 /* Reset and base styles */
 * {
   margin: 0;
@@ -26,12 +20,12 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --primary-color: #4caf50; /* Green */
+  --primary-color: #85abff; /* Green */
   --secondary-color: #ffffff; /* White */
   --background-color: #f0f0f0; /* Light gray */
-  --text-color: #333333; /* Dark gray */
+  --text-color: #323232; /* Dark gray */
   --accent-color: #ffeb3b; /* Yellow */
-  --highlight-color: #795548; /* Brown */
+  --highlight-color: #92b1ff; /* Brown */
 }
 
 html, body, #root {
@@ -135,12 +129,12 @@ button:focus-visible {
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --primary-color: #4caf50; /* Green */
-    --secondary-color: #000000; /* Black */
+    --primary-color: #240960; /* Green */
+    --secondary-color: #ffffff; /* Black */
     --background-color: #121212; /* Dark gray */
     --text-color: #e0e0e0; /* Light gray */
     --accent-color: #ffeb3b; /* Yellow */
-    --highlight-color: #795548; /* Brown */
+    --highlight-color: #a2bbfc; /* Brown */
   }
 
   body {
@@ -164,28 +158,28 @@ button:focus-visible {
 }
 
 .rbc-toolbar button {
-  @apply bg-green-500 text-white hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700;
+  @apply bg-[#5284ff] text-white hover:bg-blue-400 dark:bg-blue-400 dark:hover:bg-blue-500;
 }
 
 .rbc-toolbar button.rbc-active {
-  @apply bg-green-700;
+  @apply bg-[#240960];
 }
 
 .rbc-event {
-  @apply bg-green-500 dark:bg-green-600;
+  @apply bg-red-500 dark:bg-red-600;
   transition: all 0.3s ease;
 }
 
 .rbc-today {
-  @apply bg-green-50 dark:bg-green-900/20;
+  @apply bg-blue-300 dark:bg-blue-700/20;
 }
 
 .rbc-off-range-bg {
-  @apply bg-gray-100 dark:bg-gray-800;
+  @apply bg-gray-900 dark:bg-gray-600;
 }
 
 .rbc-header {
-  @apply dark:text-gray-300;
+  @apply dark:text-gray-600;
 }
 
 .rbc-button-link {
@@ -204,6 +198,6 @@ button:focus-visible {
 
 
 .rbc-event.draft-event {
-  background-color: #795548 !important;
+  background-color: #240960 !important;
   opacity: 0.7;
 }

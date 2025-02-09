@@ -11,75 +11,58 @@ const Navbar: FC = () => {
     navigate('/');
   };
 
+  const imageUrl = "http://localhost:5173/src/assets/logo.png";
+
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-green-500 dark:bg-green-600 shadow-md">
-      <div className="mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
-          {/* Left side - Logo and main nav */}
-          <div className="flex items-center space-x-4">
-            <Link to="/calendar" className="text-white text-xl font-bold">
-              TimeCore
-            </Link>
-            <div className="hidden md:flex space-x-4">
-              <Link
-                to="/calendar"
-                className={`text-white px-3 py-2 rounded-md text-sm font-medium ${
-                  location.pathname === '/calendar'
-                    ? 'bg-green-600 dark:bg-green-700'
-                    : 'hover:bg-green-600 dark:hover:bg-green-700'
-                }`}
-              >
-                Calendar
-              </Link>
-            </div>
-          </div>
+    <nav className="flex items-center justify-between px-6 py-4 bg-[#7583f6] p-4 text-[#ffffff]">
+      {/* Logo alineado a la izquierda con espaciado */}
+      <a href="http://localhost:5173/calendar">
+        <img src={imageUrl} alt="User Avatar" className="w-14 h-14 rounded-full object-cover shadow-lg" />
+      </a>
 
-          {/* Right side - Profile menu */}
-          <div className="relative">
-            <button
-              onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="flex items-center space-x-2 text-white hover:bg-green-600 dark:hover:bg-green-700 px-3 py-2 rounded-md"
+      {/* Título centrado */}
+      <a href="http://localhost:5173/calendar">
+        <p className="text-[#ffffff] text-lg font-bold">Calendario - TimeCore</p>
+      </a>
+
+      {/* Botón de perfil alineado a la derecha */}
+      <div className="relative">
+      {/* Profile Button */}
+        <button
+          onClick={() => setIsProfileOpen(!isProfileOpen)}
+          className="flex items-center space-x-2 bg-[#240960] text-[#ffffff] px-4 py-2 rounded-md hover:bg-[#3a0e91] transition">
+          <svg className="h-6 w-6 text-[#ffffff]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        </button>
+      
+        {/* Dropdown Menu */}
+        {isProfileOpen && (
+          <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-[#ffffff] p-3"><br></br>
+            <Link
+              to="/profile"
+              className="block px-4 py-2 text-sm text-[#ffffff] text-center"
+              onClick={() => setIsProfileOpen(false)}
             >
-              <span className="hidden md:block">My Account</span>
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
+              Configurações
+            </Link><br></br>
+            <button
+              onClick={() => {
+                handleLogout();
+                setIsProfileOpen(false);
+              }}
+              className="block w-full text-center px-4 py-2 text-sm font-semibold text-[#240960] bg-[#7583f6] rounded-md hover:bg-[#5e6be6] transition"
+            >
+              Sair
             </button>
-
-            {/* Dropdown menu */}
-            {isProfileOpen && (
-              <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5">
-                <Link
-                  to="/profile"
-                  className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  onClick={() => setIsProfileOpen(false)}
-                >
-                  Profile Settings
-                </Link>
-                <button
-                  onClick={() => {
-                    handleLogout();
-                    setIsProfileOpen(false);
-                  }}
-                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  Sign out
-                </button>
-              </div>
-            )}
           </div>
-        </div>
-      </div>
+        )}
+      </div>    
     </nav>
   );
 };
