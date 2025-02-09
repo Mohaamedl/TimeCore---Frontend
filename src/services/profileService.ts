@@ -3,6 +3,12 @@ import { api } from './authService';
 
 const API_URL = 'http://localhost:8080/api/users';
 
+export interface TwoFactorAuth {
+  id?: any;
+  enabled: boolean;  
+  send_to: 'MOBILE' | 'EMAIL' | null;  
+}
+
 export interface UserProfile {
   id: number;
   fullname: string;
@@ -10,10 +16,7 @@ export interface UserProfile {
   mobile: string | null;
   status: 'ACTIVE' | 'INACTIVE' | 'BANNED';
   isVerified: boolean;
-  twoFactorAuth: {
-    isEnabled: boolean;
-    sendTo: 'MOBILE' | 'EMAIL' | null;
-  };
+  twoFactorAuth: TwoFactorAuth;
   picture: string | null;
   role: 'USER' | 'ADMIN';
 }
@@ -29,19 +32,31 @@ export const getUserProfile = async (): Promise<UserProfile> => {
 export const updateProfile = async (data: Partial<UserProfile>): Promise<UserProfile> => {
   try {
     const token = localStorage.getItem('token');
-    // Format mobile number if present
-    const formattedData = {
-      ...data,
-      mobile: data.mobile ? data.mobile.replace(/\D/g, '') : null // Remove non-digits
+    const currentProfile = await getUserProfile();
+
+    const updatedProfile = {
+      ...currentProfile,
+      fullname: data.fullname ?? currentProfile.fullname,
+      mobile: data.mobile !== undefined 
+        ? (data.mobile ? data.mobile.replace(/\D/g, '') : null)
+        : currentProfile.mobile,
+      twoFactorAuth: {
+        ...currentProfile.twoFactorAuth,
+        enabled: data.twoFactorAuth?.enabled ?? currentProfile.twoFactorAuth.enabled, 
+        send_to: data.twoFactorAuth?.enabled === false ? null : data.twoFactorAuth?.send_to ?? currentProfile.twoFactorAuth.send_to  
+      }
     };
-    
-    const response = await axios.put(`${API_URL}/profile`, formattedData, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+
+    const response = await axios.put(
+      `${API_URL}/profile`,
+      updatedProfile,
+      { headers: { Authorization: `Bearer ${token}` }}
+    );
+
     return response.data;
   } catch (error: any) {
-    const message = error.response?.data?.message || 'Failed to update profile';
-    throw new Error(message);
+    console.error('Profile update error:', error);
+    throw new Error(error.response?.data?.message || 'Failed to update profile');
   }
 };
 
@@ -57,5 +72,61 @@ export const updatePassword = async (currentPassword: string, newPassword: strin
       throw new Error('Please login to continue');
     }
     throw error;
+  }
+};
+
+export type VerificationType = 'EMAIL' | 'MOBILE';
+
+export const sendVerificationOtp = async (verificationType: VerificationType): Promise<void> => {
+  try {
+    const token = localStorage.getItem('token');
+    await axios.post(
+      `${API_URL}/verification/${verificationType}/send-otp`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` }}
+    );
+  } catch (error: any) {
+    throw new Error(error.response?.data || 'Falha ao enviar o código de verificação');
+  }
+};
+
+export const verifyAndEnableTwoFactor = async (otp: string): Promise<UserProfile> => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.patch(
+      `${API_URL}/enable-two-factor/verify-otp/${otp}`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` }}
+    );
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data || 'Falha ao verificar OTP');
+  }
+};
+
+
+export const updateTwoFactorStatus = async (enabled: boolean, sendTo?: 'EMAIL' | 'MOBILE' | null): Promise<UserProfile> => {
+  try {
+    const token = localStorage.getItem('token');
+    const currentProfile = await getUserProfile();
+    
+    const updatedProfile = {
+      ...currentProfile,
+      twoFactorAuth: {
+        ...currentProfile.twoFactorAuth,
+        enabled: enabled,  
+        send_to: enabled ? (sendTo || currentProfile.twoFactorAuth.send_to) : null  
+      }
+    };
+
+    const response = await axios.put(
+      `${API_URL}/profile`,
+      updatedProfile,
+      { headers: { Authorization: `Bearer ${token}` }}
+    );
+
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || 'Falha ao atualizar o status 2FA');
   }
 };

@@ -1,5 +1,5 @@
-import axios from 'axios';
 import { CalendarEvent } from '@/store/CalendarStore';
+import axios from 'axios';
 import moment from 'moment';
 import 'moment/locale/pt';
 
@@ -37,16 +37,16 @@ export const importEventsFromPDF = async (file: File): Promise<CalendarEvent[]> 
           throw new Error('Missing datetime fields');
         }
 
-        // Parse dates with strict ISO format
         const start = moment.parseZone(startDateTime, moment.ISO_8601, true)
           .locale('pt')
-          .utcOffset('+00:00', true); // Set UTC+0 and preserve offset
+          .utcOffset('+00:00', true)
+          .add(1,'day'); // Set UTC+0 and preserve offset
 
         const end = moment.parseZone(endDateTime, moment.ISO_8601, true)
           .locale('pt')
-          .utcOffset('+00:00', true);
+          .utcOffset('+00:00', true)
+          .add(1,'day');
 
-        // Validate parsed dates
         if (!start.isValid() || !end.isValid()) {
           throw new Error(`Invalid date format for event ${event.id}`);
         }

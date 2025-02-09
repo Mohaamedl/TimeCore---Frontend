@@ -38,7 +38,7 @@ export const useCalendarStore = create(
       addEvents: (newEvents) => set((state) => ({
         events: [...state.events, ...newEvents]
       })),
-      getEventsByMonth: (year, month) => {
+      getEventsByMonth: (year: number, month: number): CalendarEvent[] => {
         return get().events.filter((event: CalendarEvent) => 
           event.start.getFullYear() === year && 
           event.start.getMonth() === month

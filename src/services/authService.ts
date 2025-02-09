@@ -1,16 +1,13 @@
-import axios from 'axios';
+import { CalendarEvent, useCalendarStore } from '@/store/CalendarStore';
 import { AuthResponse, UserData } from '@/types/auth';
-import { useCalendarStore } from '@/store/CalendarStore';
-import { CalendarEvent } from '@/store/CalendarStore';
+import axios from 'axios';
 
 const API_URL = 'http://localhost:8080/auth';
 
-// Create axios instance with default config
 const api = axios.create({
   baseURL: 'http://localhost:8080',
 });
 
-// Add request interceptor to include token
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -26,7 +23,6 @@ api.interceptors.request.use(
   }
 );
 
-// Add response interceptor
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -65,13 +61,11 @@ export const login = async (email: string, password: string): Promise<AuthRespon
   try {
     const response = await axios.post(`${API_URL}/signin`, { email, password });
     
-    // Handle successful login with JWT
     if (response.data.jwt) {
       localStorage.setItem('token', response.data.jwt);
       return response.data;
     }
     
-    // Handle 2FA requirement
     if (response.data.twoFactorAuthEnabled) {
       return {
         requiresTwoFactor: true,
@@ -103,7 +97,7 @@ export const verifyTwoFactor = async (otp: string, session: string) => {
 
 export const logout = (): void => {
  
-  localStorage.removeItem('calendar-storage');
+  localStorage.setItem('calendar-storage', " ");
    localStorage.removeItem('token');
   useCalendarStore.getState().clearEvents();
   window.location.href = '/';
@@ -127,7 +121,6 @@ export const importEventsFromPDF = async (file: File): Promise<CalendarEvent[]> 
     throw new Error('No file selected');
   }
 
-  // Validate file type and size
   if (!file.type.includes('pdf')) {
     throw new Error('Please select a PDF file');
   }
@@ -180,3 +173,4 @@ export const importEventsFromPDF = async (file: File): Promise<CalendarEvent[]> 
 
 export { api };
 export type { UserData };
+
