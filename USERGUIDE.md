@@ -60,6 +60,11 @@ make the desired changes and press the update option.
 
 To Delete an event you can simply click the event you want to delete, and choose the Delete option.
 
+#### Importing a PDF
+
+Above the Events Menu, there is a button labeled "Import PDF", after pressing it, a File manager window will open, and you will have to select a pdf file of a schedule 
+to import, after selecting it, the events in that schedule will show up in the calendar in the app.
+
 ## Configurations Page
 
 On the top-right corner of the Main page, there is a button that when pressed presents you with two options, one of them is named "configurations", 
@@ -67,17 +72,28 @@ when pressed, it redirects you to the configurations page, which has three diffe
 
 ### Profile Page
 
-In the profile section, x text fields are displayed:
+In the profile section, 3 text fields are displayed:
 
-- A username text field, in which you can see and alter your username.
-- An E-mail text field, where you can see, but not alter the accounts e-mail.
+- A "username" text field, in which you can see and alter your username.
+- An "E-mail" text field, where you can see, but not alter the accounts e-mail.
+- A "Phone number" text field, where you can type in your phone number (with the country indicator, for example, +351 for potugal)
+
+### Security Page
+
+In the Security section, 3 text fields are displayed:
+
+- A "Current Password" text field, where you must type in your current password, in order to change it.
 - A "New Passord" text field, where you can update your password.
 - A "Confirm New Password" text field, where you have to write the same thing you wrote in "new password" to confirm the changes you made.
 
-###To complete 
+### Two-Factor Auth Page
+
+In the 2FA section, you will find a button labeled "Enable 2FA", if you press it, every time you try to Login, an E-mail will be sent to your Gmail, with a 6 number code
+
+There is also the option of disabling the 2FA, in case you don't feel it is necessary.
 
 
+## Conclusion
 
-
-
+We hope this user guide proves useful and improves your experience with our application, and that TimeCore assists you in bettering your time efficiency!
 
