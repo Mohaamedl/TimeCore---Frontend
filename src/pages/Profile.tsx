@@ -412,6 +412,3 @@ const Profile: FC = () => {
 
 export default Profile;
 
-function setTwoFactorState(arg0: { isEnabled: boolean; sendTo: "EMAIL" | "MOBILE" | null; }) {
-  throw new Error('Function not implemented.');
-}
