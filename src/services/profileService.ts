@@ -13,7 +13,7 @@ export interface UserProfile {
   id: number;
   fullname: string;
   email: string;
-  mobile: string | null;
+  mobile: string ;
   status: 'ACTIVE' | 'INACTIVE' | 'BANNED';
   isVerified: boolean;
   twoFactorAuth: TwoFactorAuth;
