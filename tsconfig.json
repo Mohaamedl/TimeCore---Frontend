@@ -5,6 +5,7 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
+   
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
@@ -21,7 +22,8 @@
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedParameters": true, 
+    "forceConsistentCasingInFileNames" :true,
     "noFallthroughCasesInSwitch": true
   },
   "include": ["src"],

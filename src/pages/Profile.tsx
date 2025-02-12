@@ -1,7 +1,20 @@
-import { getUserProfile, updatePassword, updateProfile, UserProfile, sendVerificationOtp, verifyAndEnableTwoFactor, VerificationType, updateTwoFactorStatus } from '@/services/profileService';
+import { UserProfile, VerificationType, getUserProfile, sendVerificationOtp, updatePassword, updateProfile, updateTwoFactorStatus, verifyAndEnableTwoFactor } from '@/services/profileService';
 import debounce from 'lodash/debounce';
 import { FC, useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+interface FormDataProfile {
+  id: number;
+  fullname: string;
+  email: string;
+  mobile: string;
+  status: string;
+  isVerified: boolean;
+  twoFactorAuth: any;
+  picture: any;
+  role: string;
+  changedFields?: Set<string>;
+}
 
 const Switch = ({ enabled, onChange }: { enabled: boolean; onChange: () => void }) => (
   <button
@@ -29,10 +42,17 @@ const Profile: FC = () => {
   const [activeSection, setActiveSection] = useState<'profile'|'security'|'2fa'>('profile');
   const [message, setMessage] = useState<{type: 'success'|'error', text: string} | null>(null);
   const [passwordData, setPasswordData] = useState({ current: '', new: '', confirm: '' });
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<FormDataProfile>({
     id: 0,
     fullname: '',
-    mobile: ''
+    email: '',
+    mobile: "",
+    status: 'ACTIVE',
+    isVerified: false,
+    twoFactorAuth: undefined,
+    picture: null,
+    role: 'USER',
+    changedFields: new Set<string>()
   });
   const [isTwoFactorLoading, setIsTwoFactorLoading] = useState(false);
   const [otpVerification, setOtpVerification] = useState({
@@ -50,10 +70,6 @@ const Profile: FC = () => {
       setFormData({
         ...profile,
         changedFields: new Set()
-      });
-      setTwoFactorState({
-        isEnabled: profile.twoFactorAuth.isEnabled,
-        sendTo: profile.twoFactorAuth.sendTo
       });
     }
   }, [profile]);
@@ -80,7 +96,7 @@ const Profile: FC = () => {
   };
 
   const debouncedUpdate = useCallback(
-    debounce(async (data: UserProfile) => {
+    debounce(async (data: Partial<UserProfile>) => {
       try {
         await updateProfile(data);
         setMessage({ type: 'success', text: 'Profile updated' });
@@ -95,30 +111,11 @@ const Profile: FC = () => {
   );
 
   const handleInputChange = (field: string, value: string) => {
-    if (field === 'mobile') {
-      // Allow only numbers, spaces, and special characters like +, -, ()
-      const formattedValue = value.replace(/[^\d\s+()-]/g, '');
-      setFormData(prev => ({
-        ...prev,
-        [field]: formattedValue
-      }));
-      debouncedUpdate({ [field]: formattedValue });
-      return;
-    }
-
-    setFormData(prev => ({
-      ...prev,
-      [field]: value,
-      changedFields: prev.changedFields?.add(field)
-    }));
-    
-    // Send entire object with changes
-    const updatedProfile = {
-      ...formData,
-      [field]: value
-    };
-    
-    debouncedUpdate(updatedProfile);
+    setFormData(prev => {
+      const updatedFormData = { ...prev, [field]: value, changedFields: prev.changedFields ? new Set(prev.changedFields).add(field) : new Set([field]) };
+      debouncedUpdate({ [field]: value });
+      return updatedFormData;
+    });
   };
 
   const handlePasswordUpdate = async () => {
@@ -414,3 +411,4 @@ const Profile: FC = () => {
 };
 
 export default Profile;
+
