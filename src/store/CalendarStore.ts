@@ -21,6 +21,16 @@ interface CalendarStore {
   setDraftEvent: (event: CalendarEvent | null) => void;
   getEventsByMonth: (year: number, month: number) => CalendarEvent[];
 }
+export interface ScheduleStore {
+  events : CalendarEvent[];
+  addEvent: (event: CalendarEvent) => void;
+  addEvents: (newEvents: CalendarEvent[]) => void;
+  clearEvents: () => void;
+  updateEvent: (event: CalendarEvent) => void;
+  deleteEvent: (eventId: string) => void;
+  getEventsByMonth: (year: number, month: number) => CalendarEvent[];
+}
+
 
 export const useCalendarStore = create(
   persist<CalendarStore>(
